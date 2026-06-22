@@ -1,5 +1,5 @@
 node_modules
-playwright-report
-coverage
+.env
+.DS_Store
+.git
 dist
-test-results
