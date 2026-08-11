@@ -33,3 +33,8 @@ coverage
 /playwright/.cache/
 # Webkit with playwright creates a salt file
 salt
+
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
