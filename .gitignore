@@ -38,3 +38,10 @@ salt
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hclinfra/.terraform/
+infra/.terraform/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
