@@ -1,0 +1,18 @@
+output "alb_dns_name" {
+    description = "The DNS name of the load balancer"
+    value = aws_lb.main.dns_name
+}
+
+output "alb_arn" {
+    description = "The ID and ARN of the load balancer"
+    value = aws_lb.main.arn
+}
+
+output "target_group_arn" {
+  description = "ARN of the target group"
+  value       = aws_lb_target_group.main.arn
+}
+
+output "alb_security_group_id" {
+  value = aws_security_group.alb.id
+}
