@@ -1,133 +1,170 @@
-<picture>
-    <source srcset="./.github/logo-dark.png" media="(prefers-color-scheme: light)">
-    <source srcset="./.github/logo-white.png" media="(prefers-color-scheme: dark)">
-    <img src="./.github/logo-dark.png" alt="logo">
-</picture>
+# ECS IT Tools Deployment
 
-<p align="center">
-Useful tools for developer and people working in IT. <a href="https://it-tools.tech">Try it!</a>
-</p>
+## Project Overview
 
-## Functionalities and roadmap
+This project demonstrates a production-grade cloud deployment of [IT Tools](https://github.com/CorentinTh/it-tools) — a collection of handy online tools for developers — containerised with Docker and deployed on AWS ECS Fargate. The infrastructure is fully automated using Terraform with modular design, and deployments are handled via GitHub Actions CI/CD pipelines with OIDC authentication.
 
-Please check the [issues](https://github.com/CorentinTh/it-tools/issues) to see if some feature listed to be implemented.
+Live URL: [https://tm.houcinebenzellat.uk](https://tm.houcinebenzellat.uk)
 
-You have an idea of a tool? Submit a [feature request](https://github.com/CorentinTh/it-tools/issues/new/choose)!
+---
 
-## Self host
+## Architecture
 
-Self host solutions for your homelab
+The application follows a production-grade AWS architecture:
 
-**From docker hub:**
+- Users access the app via HTTPS through a custom domain
+- Route 53 resolves the domain to an Application Load Balancer
+- The ALB terminates SSL using an ACM certificate and forwards traffic to ECS
+- ECS Fargate runs the containerised IT Tools application in private subnets
+- A NAT Gateway allows ECS tasks to pull images from ECR
 
-```sh
-docker run -d --name it-tools --restart unless-stopped -p 8080:80 corentinth/it-tools:latest
+> Architecture diagram coming soon
+
+---
+
+## Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| Docker | Containerisation with multi-stage build |
+| AWS ECS Fargate | Container orchestration (serverless) |
+| AWS ECR | Private Docker image registry |
+| AWS ALB | Load balancing and HTTPS termination |
+| AWS ACM | SSL/TLS certificate management |
+| AWS VPC | Network isolation with public/private subnets |
+| AWS Route 53 | DNS management |
+| AWS IAM | OIDC authentication and least-privilege roles |
+| Terraform | Infrastructure as Code with modular design |
+| GitHub Actions | CI/CD pipelines with OIDC |
+
+---
+
+## Infrastructure
+
+All infrastructure is defined as code using Terraform, split into 6 modules:
+
+infra/
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── provider.tf
+└── modules/
+├── vpc/ # VPC, subnets, IGW, NAT Gateway, route tables
+├── ecr/ # Elastic Container Registry
+├── iam/ # Task execution role and policies
+├── acm/ # SSL certificate with DNS validation
+├── alb/ # Application Load Balancer, listeners, target group
+└── ecs/ # ECS cluster, task definition, service, security groups
+
+
+**Terraform State** is stored remotely in S3 with versioning enabled for disaster recovery.
+
+---
+
+## CI/CD Pipelines
+
+Three GitHub Actions pipelines automate the full deployment lifecycle:
+
+| Pipeline | Trigger | Description |
+|---------|---------|-------------|
+| App Pipeline | Push to main | Builds Docker image and pushes to ECR tagged with commit SHA |
+| Terraform Apply | Push to infra/** | Runs terraform init, fmt, validate, plan and apply |
+| Terraform Destroy | Manual (workflow_dispatch) | Safely tears down all infrastructure |
+
+All pipelines use **OIDC authentication** — no static AWS keys are stored anywhere.
+
+---
+
+## Project Structure
+
+ecs-it-tools/
+├── app/ # IT Tools source code
+├── Dockerfile # Multi-stage Docker build
+├── .dockerignore
+├── nginx.conf # Custom nginx configuration
+├── infra/ # Terraform modules
+│ ├── modules/
+│ │ ├── vpc/
+│ │ ├── ecr/
+│ │ ├── iam/
+│ │ ├── acm/
+│ │ ├── alb/
+│ │ └── ecs/
+│ ├── main.tf
+│ ├── variables.tf
+│ ├── outputs.tf
+│ └── provider.tf
+├── .github/
+│ └── workflows/
+│ ├── app.yml
+│ ├── tf-apply.yml
+│ └── tf-destroy.yml
+└── README.md
+
+---
+
+## Local Setup
+
+### Prerequisites
+
+- Docker
+- AWS CLI configured
+- Terraform >= 1.0
+
+### Run locally
+
+```bash
+# Clone the repo
+git clone https://github.com/houcb27/ecs-it-tools
+cd ecs-it-tools
+
+# Build and run
+docker build -t it-tools .
+docker run -p 80:80 it-tools
+
+# Visit http://localhost:80
 ```
 
-**From github packages:**
+### Deploy infrastructure
 
-```sh
-docker run -d --name it-tools --restart unless-stopped -p 8080:80 ghcr.io/corentinth/it-tools:latest
+```bash
+cd infra
+terraform init
+terraform plan
+terraform apply
 ```
 
-**Other solutions:**
+---
 
-- [Cloudron](https://www.cloudron.io/store/tech.ittools.cloudron.html)
-- [Tipi](https://www.runtipi.io/docs/apps-available)
-- [Unraid](https://unraid.net/community/apps?q=it-tools)
+## Screenshots
 
-## Contribute
+### App Running Live
 
-### Recommended IDE Setup
+![IT Tools Live](screenshots/app-live.png)
 
-[VSCode](https://code.visualstudio.com/) with the following extensions:
+### ECS Service Running
 
-- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur)
-- [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-- [i18n Ally](https://marketplace.visualstudio.com/items?itemName=lokalise.i18n-ally)
+![ECS Service](screenshots/ecs-service.png)
 
-with the following settings:
+### Terraform Apply
 
-```json
-{
-  "editor.formatOnSave": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "i18n-ally.localesPaths": ["locales", "src/tools/*/locales"],
-  "i18n-ally.keystyle": "nested"
-}
-```
+![Terraform Apply](screenshots/terraform-apply.png)
 
-### Type Support for `.vue` Imports in TS
+### CI/CD Pipeline
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+![Pipeline](screenshots/pipeline.png)
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+---
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+## Key Decisions
 
-### Project Setup
+**Why ECS Fargate?** No server management — AWS handles provisioning, patching and scaling. I focus on the application and infrastructure code.
 
-```sh
-pnpm install
-```
+**Why private subnets for ECS?** Security best practice — containers are not directly exposed to the internet. All traffic flows through the ALB.
 
-### Compile and Hot-Reload for Development
+**Why OIDC instead of access keys?** OIDC tokens are temporary and expire after each job. No long-lived credentials stored in GitHub secrets.
 
-```sh
-pnpm dev
-```
+**Why Terraform modules?** Separation of concerns — each module manages one layer of the infrastructure. Makes it easier to reason about, test, and reuse.
 
-### Type-Check, Compile and Minify for Production
+---
 
-```sh
-pnpm build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-pnpm test
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
-
-### Create a new tool
-
-To create a new tool, there is a script that generate the boilerplate of the new tool, simply run:
-
-```sh
-pnpm run script:create:tool my-tool-name
-```
-
-It will create a directory in `src/tools` with the correct files, and a the import in `src/tools/index.ts`. You will just need to add the imported tool in the proper category and develop the tool.
-
-## Contributors
-
-Big thanks to all the people who have already contributed!
-
-[![contributors](https://contrib.rocks/image?repo=corentinth/it-tools&refresh=1)](https://github.com/corentinth/it-tools/graphs/contributors)
-
-## Credits
-
-Coded with ❤️ by [Corentin Thomasset](https://corentin.tech?utm_source=it-tools&utm_medium=readme).
-
-This project is continuously deployed using [vercel.com](https://vercel.com).
-
-Contributor graph is generated using [contrib.rocks](https://contrib.rocks/preview?repo=corentinth/it-tools).
-
-<a href="https://www.producthunt.com/posts/it-tools?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-it&#0045;tools" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=345793&theme=light" alt="IT&#0032;Tools - Collection&#0032;of&#0032;handy&#0032;online&#0032;tools&#0032;for&#0032;devs&#0044;&#0032;with&#0032;great&#0032;UX | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-<a href="https://www.producthunt.com/posts/it-tools?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-it&#0045;tools" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=345793&theme=light&period=daily" alt="IT&#0032;Tools - Collection&#0032;of&#0032;handy&#0032;online&#0032;tools&#0032;for&#0032;devs&#0044;&#0032;with&#0032;great&#0032;UX | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-
-## License
-
-This project is under the [GNU GPLv3](LICENSE).
