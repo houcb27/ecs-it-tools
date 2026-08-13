@@ -5,10 +5,10 @@ resource "aws_ecs_cluster" "main" {
     value = "enabled"
   }
 
-tags = {
-  Name        = var.cluster_name
-  Environment = var.environment
-}
+  tags = {
+    Name        = var.cluster_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_security_group" "ecs" {
@@ -21,9 +21,9 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_ingress" {
   security_group_id = aws_security_group.ecs.id
 
   referenced_security_group_id = var.alb_security_group_id
-  from_port   = 80
-  ip_protocol = "tcp"
-  to_port     = 80
+  from_port                    = 80
+  ip_protocol                  = "tcp"
+  to_port                      = 80
 }
 
 resource "aws_vpc_security_group_egress_rule" "ecs_egress" {
@@ -33,7 +33,7 @@ resource "aws_vpc_security_group_egress_rule" "ecs_egress" {
 }
 
 resource "aws_ecs_task_definition" "service" {
-  family = var.service_name
+  family                   = var.service_name
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.task_cpu
@@ -50,16 +50,16 @@ resource "aws_ecs_task_definition" "service" {
           hostPort      = var.container_port
         }
       ]
-}])
+  }])
 }
-    
+
 resource "aws_ecs_service" "main" {
   name            = var.service_name
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.service.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
-  
+
 
   load_balancer {
     target_group_arn = var.target_group_arn
@@ -67,7 +67,7 @@ resource "aws_ecs_service" "main" {
     container_port   = var.container_port
   }
 
- network_configuration {
+  network_configuration {
     subnets = var.private_subnet_ids
 
     security_groups = [

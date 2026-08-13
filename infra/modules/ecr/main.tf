@@ -6,9 +6,9 @@ resource "aws_ecr_repository" "main" {
     scan_on_push = true
   }
 
-tags = {
-  Name        = "it-tools"
-  Environment = var.environment
-}
+  tags = {
+    Name        = "it-tools"
+    Environment = var.environment
+  }
 }
 

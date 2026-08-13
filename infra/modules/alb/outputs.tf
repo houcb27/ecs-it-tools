@@ -1,11 +1,11 @@
 output "alb_dns_name" {
-    description = "The DNS name of the load balancer"
-    value = aws_lb.main.dns_name
+  description = "The DNS name of the load balancer"
+  value       = aws_lb.main.dns_name
 }
 
 output "alb_arn" {
-    description = "The ID and ARN of the load balancer"
-    value = aws_lb.main.arn
+  description = "The ID and ARN of the load balancer"
+  value       = aws_lb.main.arn
 }
 
 output "target_group_arn" {

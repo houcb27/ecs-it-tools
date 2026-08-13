@@ -5,44 +5,44 @@ variable "aws_region" {
 }
 
 variable "vpc_cidr" {
-    type = string
-    description = "CIDR block for VPC"
-    default = "10.0.0.0/16"
+  type        = string
+  description = "CIDR block for VPC"
+  default     = "10.0.0.0/16"
 }
 
 variable "domain_name" {
-    type = string
-    description = "Domain name"
-    default = "houcinebenzellat.uk"
+  type        = string
+  description = "Domain name"
+  default     = "houcinebenzellat.uk"
 }
 
 variable "container_image" {
-    type = string 
-    description = "ECR image URI for container"
-    default = "545892166560.dkr.ecr.eu-west-2.amazonaws.com/it-tools"
+  type        = string
+  description = "ECR image URI for container"
+  default     = "545892166560.dkr.ecr.eu-west-2.amazonaws.com/it-tools"
 }
 
 variable "environment" {
-    type = string
-    description = "Deployment environment"
-    default = "prod"
+  type        = string
+  description = "Deployment environment"
+  default     = "prod"
 }
 
 variable "task_memory" {
-    type = number
-    default = 512
-    description = "Memory for ECS task"
+  type        = number
+  default     = 512
+  description = "Memory for ECS task"
 }
 
 variable "desired_count" {
-    type = number
-    description = "Number of ECS tasks to run"
-    default = 1
+  type        = number
+  description = "Number of ECS tasks to run"
+  default     = 1
 }
 variable "task_cpu" {
-    type = number
-    description = "CPU for ECS task"
-    default = 256
+  type        = number
+  description = "CPU for ECS task"
+  default     = 256
 }
 
 variable "availability_zone" {
@@ -64,19 +64,19 @@ variable "private_subnet_cidr" {
 }
 
 variable "cluster_name" {
-    description = "Name of ECS cluster"
-    type = string
-    default = "it-tool-cluster"
+  description = "Name of ECS cluster"
+  type        = string
+  default     = "it-tool-cluster"
 }
 
 variable "service_name" {
-    description = "Name of ECS service"
-    type = string
-    default = "it-tool-service"
+  description = "Name of ECS service"
+  type        = string
+  default     = "it-tool-service"
 }
 
 variable "container_port" {
-    description = "Port of ECR image"
-    type = number
-    default = 80
+  description = "Port of ECR image"
+  type        = number
+  default     = 80
 }
