@@ -139,20 +139,22 @@ terraform apply
 ## Screenshots
 
 ### App Running Live
-
-![IT Tools Live](screenshots/app-live.png)
+![App Live](screenshots/app-live.png)
 
 ### ECS Service Running
-
 ![ECS Service](screenshots/ecs-service.png)
 
-### Terraform Apply
+### Target Group Healthy
+![Target Group](screenshots/target-group.png)
 
+### Terraform Apply Pipeline
 ![Terraform Apply](screenshots/terraform-apply.png)
 
-### CI/CD Pipeline
+### App Pipeline
+![App Pipeline](screenshots/app-pipeline.png)
 
-![Pipeline](screenshots/pipeline.png)
+### Terraform Destroy Pipeline
+![Destroy Pipeline](screenshots/destroy-pipeline.png)
 
 ---
 
