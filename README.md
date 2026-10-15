@@ -9,17 +9,15 @@
 
 ## What is this project?
 
-This project is a production-grade cloud deployment of [IT Tools](https://github.com/CorentinTh/it-tools) on AWS ECS Fargate, built to demonstrate real-world DevOps engineering — containerisation, infrastructure as code, automated CI/CD, HTTPS, and custom domain routing.
+This project is a production-grade cloud deployment of [IT Tools](https://github.com/CorentinTh/it-tools) on AWS ECS Fargate, built to demonstrate real-world DevOps engineering, containerisation, infrastructure as code, automated CI/CD, HTTPS, and custom domain routing.
 
 **Live URL:** [https://tm.houcinebenzellat.uk](https://tm.houcinebenzellat.uk)
 
 ---
 
-## The Big Four
-
 ### 1. What is IT Tools?
 
-IT Tools is an open-source collection of handy utilities for developers — think base64 encoder/decoder, JWT parser, hash generator, UUID generator, colour converter, and 60+ more tools — all accessible from a single clean web interface.
+IT Tools is an open-source collection of handy utilities for developers — think base64 encoder/decoder, JWT parser, hash generator, UUID generator, colour converter, and 60+ more tools all accessible from a single clean web interface.
 
 It's built with Vue.js, runs as a single-page application, and is completely client-side — meaning no backend, no database, and no user data is stored. This makes it ideal for containerisation and static serving via nginx.
 
@@ -27,18 +25,18 @@ It's built with Vue.js, runs as a single-page application, and is completely cli
 
 I chose IT Tools for several reasons:
 
-- **No database dependency** — it runs as a single container, keeping the infrastructure clean and focused on ECS, networking, and automation
-- **Real utility** — it's a tool developers actually use, making the deployment meaningful rather than a throwaway "hello world"
-- **Containerisation challenge** — IT Tools is a Node.js/Vue app that requires a proper multi-stage Docker build (compile assets → serve with nginx), which demonstrates real Docker knowledge
-- **Differentiation** — deploying a real open-source tool rather than a sample app makes the project stand out on a CV
+- **No database dependency** : it runs as a single container, keeping the infrastructure clean and focused on ECS, networking, and automation
+- **Real utility** : it's a tool developers actually use, making the deployment meaningful rather than a throwaway "hello world"
+- **Containerisation challenge** : IT Tools is a Node.js/Vue app that requires a proper multi-stage Docker build (compile assets → serve with nginx), which demonstrates real Docker knowledge
+- **Differentiation** : deploying a real open-source tool rather than a sample app makes the project stand out on a CV
 
 ### 3. Why ECS? Why not a VM, Vercel, or Netlify?
 
 **Why not Vercel or Netlify?**
-Vercel and Netlify are excellent for static sites but they abstract away everything. There's no Docker, no networking, no IAM, no VPC — none of the infrastructure skills employers are hiring for. Deploying to Vercel takes one click and teaches you nothing about cloud infrastructure.
+Vercel and Netlify are excellent for static sites but they abstract away everything. There's no Docker, no networking, no IAM, no VPC  none of the infrastructure skills employers are hiring for. Deploying to Vercel takes one click and teaches you nothing about cloud infrastructure.
 
 **Why not a VM (EC2)?**
-A VM works but you become responsible for the OS — patching, security updates, capacity planning, SSH access management. If the instance goes down, the app goes down. ECS with Fargate handles all of this automatically.
+A VM works but you become responsible for the OS  patching, security updates, capacity planning, SSH access management. If the instance goes down, the app goes down. ECS with Fargate handles all of this automatically.
 
 **Why ECS Fargate specifically?**
 - **Serverless containers** — no servers to manage. I define CPU and memory requirements and AWS handles placement, scaling, and availability
@@ -127,6 +125,7 @@ All pipelines authenticate to AWS using **OIDC** — GitHub requests temporary c
 
 ## Project Structure
 
+```text
 ecs-it-tools/
 ├── app/ # IT Tools source code (Vue.js)
 ├── Dockerfile # Multi-stage build: Node → nginx
@@ -151,7 +150,7 @@ ecs-it-tools/
 │ └── tf-destroy.yml
 ├── screenshots/
 └── README.md
-
+```
 
 ---
 
